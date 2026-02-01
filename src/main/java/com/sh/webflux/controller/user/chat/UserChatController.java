@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.Serial;
@@ -30,6 +31,20 @@ public class UserChatController implements Serializable {
         log.info("요청 모델 : " + userChatRequestDto.getLlmModel());
 
         return userChatService.getOneShotChat(userChatRequestDto);
+    }
+
+    /**
+     * Stream으로 서비스를 구현해서 응답 데이터가 여러개 올 수 있도록 Mono -> Flux로 변경
+     * @param userChatRequestDto
+     * @return
+     */
+    @PostMapping("/oneshot/stream")
+    public Flux<UserChatResponseDto> oneShotChatStreams(@RequestBody UserChatRequestDto userChatRequestDto) {
+        // 서비스에서 Request 가공해서 response로 돌려줘야 함.
+        log.info("요청 데이터 : " + userChatRequestDto.getRequest());
+        log.info("요청 모델 : " + userChatRequestDto.getLlmModel());
+
+        return userChatService.getOneShotChatStream(userChatRequestDto);
     }
 
 }

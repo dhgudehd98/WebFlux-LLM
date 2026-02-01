@@ -9,6 +9,7 @@ import com.sh.webflux.service.llmClient.LlmWebClientService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -26,9 +27,16 @@ public class UserChatServiceImpl implements UserChatService{
     @Override
     public Mono<UserChatResponseDto> getOneShotChat(UserChatRequestDto userChatRequestDto) {
         LlmChatRequestDto llmChatRequestDto = new LlmChatRequestDto(userChatRequestDto, "요청에 적절히 응답");
-        log.info("Get LLM Model : " + userChatRequestDto.getLlmModel());
         Mono<LlmChatResponseDto> chatCompletionMono = llmWebClientServiceMap.get(userChatRequestDto.getLlmModel().getLlmType())
                 .getChatCompletion(llmChatRequestDto);
         return chatCompletionMono.map(UserChatResponseDto::new);
+    }
+
+    @Override
+    public Flux<UserChatResponseDto> getOneShotChatStream(UserChatRequestDto userChatRequestDto) {
+        LlmChatRequestDto llmChatRequestDto = new LlmChatRequestDto(userChatRequestDto, "요청에 적절히 응답");
+        Flux<LlmChatResponseDto> chatCompletionFlux = llmWebClientServiceMap.get(userChatRequestDto.getLlmModel().getLlmType())
+                .getChatCompletionStream(llmChatRequestDto);
+        return chatCompletionFlux.map(UserChatResponseDto::new);
     }
 }

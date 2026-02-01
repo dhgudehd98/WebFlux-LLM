@@ -11,7 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +47,26 @@ public class GptWebClientService implements  LlmWebClientService{
     @Override
     public LlmType getLlmType() {
         return LlmType.GPT;
+    }
+
+    @Override
+    public Flux<LlmChatResponseDto> getChatCompletionStream(LlmChatRequestDto requestDto) {
+        GptChatReqeustDto gptChatReqeustDto = new GptChatReqeustDto(requestDto);
+        gptChatReqeustDto.setStream(true);
+        return webClient.post()
+                .uri("https://api.openai.com/v1/chat/completions")
+                .header("Authorization", "Bearer " + gptApiKey)
+                .bodyValue(gptChatReqeustDto)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (clientResponse -> {
+                    return clientResponse.bodyToMono(String.class).flatMap(body -> {
+                        log.error("Error Response : {}", body);
+                        return Mono.error(new RuntimeException("API 요청 실패 : " + body));
+                    });
+                }))
+                .bodyToFlux(GptChatResponseDto.class)
+                .filter(response -> Optional.ofNullable(response.getSingleChoice().getFinish_reason()).isEmpty())
+//                .takeWhile(response -> Optional.ofNullable(response.getSingleChoice().getFinish_reason()).isEmpty())
+                .map(LlmChatResponseDto::getLlmChatResponseDtoFromStream);
     }
 }

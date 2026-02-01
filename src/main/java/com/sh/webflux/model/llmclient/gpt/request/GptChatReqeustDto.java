@@ -32,7 +32,7 @@ public class GptChatReqeustDto implements Serializable {
 
     // LLMChatRequestDto -> GPT 요청 API 맞게 변경을 해줘야 함.
     public GptChatReqeustDto(LlmChatRequestDto llmChatRequestDto) {
-        if (llmChatRequestDto.isUserJson()){
+        if (llmChatRequestDto.isUseJson()){
             this.response_format = new GptResponseFormat("json_object");
         }
         this.messages = List.of(

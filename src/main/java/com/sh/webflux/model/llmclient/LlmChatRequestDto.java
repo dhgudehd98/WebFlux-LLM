@@ -25,7 +25,7 @@ public class LlmChatRequestDto implements Serializable {
      * - systemPrompt는 userRequest에 포함되는 내용보다 더 높은 강제성과 우선순위를 가짐.
      */
     private String systemPrompt;
-    private boolean userJson; //  systemPrompt보다 더 높은 강제성을 가지면서 LLM 응답형식이 JSON 형식으로 고정이 되게 됨 . LLM이 응답이 올떄 JSON 형식으로 값을 변경하고 싶으면 userJson 사용하기
+    private boolean useJson; //  systemPrompt보다 더 높은 강제성을 가지면서 LLM 응답형식이 JSON 형식으로 고정이 되게 됨 . LLM이 응답이 올떄 JSON 형식으로 값을 변경하고 싶으면 userJson 사용하기
     private LLmModel llmModel;
 
     public LlmChatRequestDto(UserChatRequestDto userChatRequestDto,  String systemPrompt) {

@@ -1,5 +1,6 @@
 package com.sh.webflux.model.llmclient;
 
+import com.sh.webflux.model.llmclient.gemini.response.GeminiChatResponseDto;
 import com.sh.webflux.model.llmclient.gpt.response.GptChatResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,5 +22,9 @@ public class LlmChatResponseDto implements Serializable {
 
     public LlmChatResponseDto(GptChatResponseDto gptChatResponseDto) {
         this.llmResponse = gptChatResponseDto.getSingleChoice().getMessage().getContent();
+    }
+
+    public LlmChatResponseDto(GeminiChatResponseDto geminiChatResponseDto) {
+        this.llmResponse = geminiChatResponseDto.getSingleText();
     }
 }

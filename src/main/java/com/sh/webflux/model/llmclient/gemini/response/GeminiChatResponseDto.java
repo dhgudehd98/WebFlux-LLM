@@ -1,5 +1,7 @@
 package com.sh.webflux.model.llmclient.gemini.response;
 
+import com.sh.webflux.exception.CustomErrorType;
+import com.sh.webflux.exception.ErrorTypeException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,7 @@ public class GeminiChatResponseDto implements Serializable {
                                 .findFirst()
                                 .map(parts -> parts.getText())
                 )
-                .orElseThrow();
+                .orElseThrow((() -> new ErrorTypeException("[GEMINI Response] There is no choices. ", CustomErrorType.GEMINI_RESPONSE_ERROR)));
+
     }
 }

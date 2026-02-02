@@ -18,4 +18,5 @@ public class GeminiCandidate implements Serializable {
     private static final long serialVersionUID = 3239509794899199003L;
 
     private GeminiContent content;
+    private String finishReason;
 }

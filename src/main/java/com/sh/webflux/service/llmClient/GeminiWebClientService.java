@@ -18,9 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-@Service
+//@Service
 @RequiredArgsConstructor
 @Slf4j
 public class GeminiWebClientService implements LlmWebClientService{
@@ -32,7 +30,6 @@ public class GeminiWebClientService implements LlmWebClientService{
     @Override
     public Mono<LlmChatResponseDto> getChatCompletion(LlmChatRequestDto llmChatRequestDto) {
         GeminiChatRequestDto geminiChatRequestDto = new GeminiChatRequestDto(llmChatRequestDto); // 이걸 이용해서 요청
-        AtomicInteger atomicInteger = new AtomicInteger(0);
         return webClient.post()
                 .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + geminiApiKey)
                 .bodyValue(geminiChatRequestDto)
@@ -40,7 +37,7 @@ public class GeminiWebClientService implements LlmWebClientService{
                 .onStatus(HttpStatusCode::is4xxClientError, (clientResponse -> {
                     return clientResponse.bodyToMono(String.class).flatMap(body -> {
                         log.error("Error Response : {}", body);
-                        return Mono.error(new ErrorTypeException("API 요청 실패 : " + body, CustomErrorType.GEMINI_RESPONSE_ERROR));
+                        return Mono.error(new RuntimeException("API 요청 실패 : " + body));
                     });
                 }))
                 .bodyToMono(GeminiChatResponseDto.class)
